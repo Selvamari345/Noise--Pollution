@@ -1,0 +1,87 @@
+Sketch.ino
+
+const int trigPin = 22;
+const int echoPin = 23;
+const int buzzerPin = 2;
+long duration;
+int distance;
+
+void setup() 
+{
+pinMode(trigPin, OUTPUT); 	// Sets the trigPin as an Output
+pinMode(echoPin, INPUT); 	// Sets the echoPin as an Input
+pinMode(2, OUTPUT);
+Serial.begin(9600); 		// Starts the serial communication
+}
+
+
+void loop() 
+{	// Clears the trigPin
+// digitalWrite(trigPin, LOW);
+
+
+delayMicroseconds(2);
+	// Sets the trigPin on HIGH state for 10 micro seconds
+digitalWrite(trigPin, HIGH);
+delayMicroseconds(10);
+digitalWrite(trigPin, LOW);
+
+	// Reads the echoPin, returns the sound wave travel time in microsec.
+duration = pulseIn(echoPin, HIGH);
+	// Calculating the distance
+distance= (duration*0.034)/2;
+
+if (distance < 100) {
+	// digitalWrite(2, HIGH);
+	tone(buzzerPin, 10000);
+} else {
+	noTone(buzzerPin);
+	// digitalWrite(2, LOW);
+}
+	// Prints the distance on the Serial Monitor
+Serial.print("Distance: ");
+Serial.print(distance);
+Serial.println("cm");
+delay(500);  //500 m.sec?=?0.5 sec
+}
+
+Diagram.json
+
+{
+  "version": 1,
+  "author": "selvamari",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 60, "left": 68, "attrs": {} },
+    {
+      "type": "wokwi-hc-sr04",
+      "id": "ultrasonic1",
+      "top": -17.7,
+      "left": -138.5,
+      "attrs": { "distance": "400" }
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "bz1",
+      "top": -74.53,
+      "left": 100.87,
+      "attrs": { "volume": "0.1" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+    [ "ultrasonic1:VCC", "esp:VIN", "red", [ "v138.82", "h145.37" ] ],
+    [ "ultrasonic1:GND", "esp:GND.2", "black", [ "v0" ] ],
+    [ "ultrasonic1:TRIG", "esp:D23", "green", [ "v110.82", "h112.7", "v-148", "h142.67", "v34" ] ],
+    [
+      "ultrasonic1:ECHO",
+      "esp:D22",
+      "green",
+      [ "v92.82", "h0.7", "v6", "h90", "v-150", "h169.33", "v59.33" ]
+    ],
+    [ "bz1:1", "esp:GND.1", "green", [ "v23.84", "h183.27", "v160.61" ] ],
+    [ "bz1:2", "esp:D2", "green", [ "v-0.7", "h121.35" ] ]
+  ],
+  "dependencies": {}
+}
